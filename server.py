@@ -5,6 +5,7 @@ from flask import Flask, Response
 
 app = Flask(__name__)
 
+
 def create_rss_feed(articles):
     # Create the root element for the RSS feed
     rss = Element('rss', attrib={'version': '2.0'})
@@ -35,6 +36,7 @@ def create_rss_feed(articles):
     # Return the XML string representation of the RSS feed
     return tostring(rss, encoding='unicode')
 
+
 def scrape_webpage(url):
     # Send a GET request to the webpage
     response = requests.get(url)
@@ -64,7 +66,7 @@ def scrape_webpage(url):
             link = link_tag.find('a')['href'] if link_tag else None
 
             # Extract published date
-            published_date = article.find('time', class_='entry-date updated td-module-date').text.strip()
+            published_date = article.find('time')['datetime']
 
             # Extract image URL if available
             image = link_tag.find('img')['data-img-url'] if article.find('img') else None
@@ -86,7 +88,8 @@ def scrape_webpage(url):
         print("Failed to fetch the webpage:", response.status_code)
         return []
 
-@app.route('/')
+
+@app.route('/1928/newrss/latest-lews/')
 def rss():
     # URL of the webpage
     webpage_url = "https://www.thepapare.com/latest-news/"
@@ -99,6 +102,7 @@ def rss():
 
     # Return RSS feed as response
     return Response(rss_feed, mimetype='text/xml')
+
 
 if __name__ == "__main__":
     app.run()
